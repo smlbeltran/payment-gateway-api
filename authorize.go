@@ -39,7 +39,7 @@ func (a *Authorize) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 	// fmt.Errorf("%s", "not authorized to continue ")
 	// }
 
-	resp, err := getAccountAuthorization(a.Db, &c)
+	resp, err := getAuthorization(a.Db, &c)
 
 	if err != nil {
 		panic(err)
