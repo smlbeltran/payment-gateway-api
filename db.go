@@ -53,18 +53,40 @@ func SetupDB() (*bolt.DB, error) {
 
 func getAccountAuthorization(db *bolt.DB, creditInfo *auth_model_req.CreditCard) (*auth_model_response.Verfication, error) {
 
-	id, err := generateAuthorization(db, creditInfo)
+	id, _ := generateAuthorization(db, creditInfo)
+
+	var verifacation auth_model_response.Verfication
+
+	err := db.View(func(tx *bolt.Tx) error {
+		value := tx.Bucket(rootBucket).Bucket(verifyBucket).Get(id)
+		return json.Unmarshal(value, &verifacation)
+	})
+
+	if err != nil {
+		panic(err)
+	}
+	// GET DETAILS BEFORE UPDATE
+	detailsTransaction, err := json.Marshal(map[string]interface{}{
+		"amount":   verifacation.Amount,
+		"currency": verifacation.Currency,
+	})
 
 	if err != nil {
 		panic(err)
 	}
 
-	var verifacation auth_model_response.Verfication
+	err = db.Update(func(tx *bolt.Tx) error {
+		err := tx.Bucket(rootBucket).Bucket(transactionBucket).Put([]byte(verifacation.VerificationId), []byte(detailsTransaction))
+		if err != nil {
+			return fmt.Errorf("could not insert transaction entry: %v", err)
+		}
 
-	err = db.View(func(tx *bolt.Tx) error {
-		value := tx.Bucket(rootBucket).Bucket(verifyBucket).Get(id)
-		return json.Unmarshal(value, &verifacation)
+		return nil
 	})
+
+	if err != nil {
+		panic(err)
+	}
 
 	return &verifacation, err
 }
@@ -132,29 +154,31 @@ func billAccount(db *bolt.DB, account account_model_request.Account) (*account_m
 	var id = account.TransactionId
 
 	// GET DETAILS BEFORE UPDATE
-	var detailsTransaction map[string]interface{}
+	// GET remaing info (amount left to transac)
+	var accountBilling account_model_response.AccountBillingResponse
 
 	err := db.View(func(tx *bolt.Tx) error {
-		value := tx.Bucket(rootBucket).Bucket(verifyBucket).Get([]byte(id))
-		return json.Unmarshal(value, &detailsTransaction)
+		value := tx.Bucket(rootBucket).Bucket(transactionBucket).Get([]byte(id))
+		return json.Unmarshal(value, &accountBilling)
 	})
 
 	if err != nil {
 		panic(err)
 	}
 
-	delete(detailsTransaction, "verification_id")
-	delete(detailsTransaction, "status")
+	// NOTE:: need to fix the amount issue.......
+	transactionAmount := int(accountBilling.Amount)
 
-	transactionAmount := detailsTransaction["amount"].(float64)
+	fmt.Println("from db:", transactionAmount)
+	fmt.Println("from request account:", account.Amount)
 
-	if float64(account.Amount) < transactionAmount {
-		detailsTransaction["amount"] = float64(account.Amount) - transactionAmount
+	if account.Amount < transactionAmount {
+		accountBilling.Amount = transactionAmount - account.Amount
 	} else {
 		panic("greater that the amount authorized")
 	}
 
-	transaction, _ := json.Marshal(detailsTransaction)
+	transaction, _ := json.Marshal(accountBilling)
 
 	// ADD ENTRY INTO TRANSACTION
 	err = db.Update(func(tx *bolt.Tx) error {
@@ -169,14 +193,6 @@ func billAccount(db *bolt.DB, account account_model_request.Account) (*account_m
 	if err != nil {
 		panic(err)
 	}
-
-	// GET remaing info (amount left to transac)
-	var accountBilling account_model_response.AccountBillingResponse
-
-	err = db.View(func(tx *bolt.Tx) error {
-		value := tx.Bucket(rootBucket).Bucket(transactionBucket).Get([]byte(id))
-		return json.Unmarshal(value, &accountBilling)
-	})
 
 	return &accountBilling, err
 }
