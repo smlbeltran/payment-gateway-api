@@ -1,5 +1,5 @@
 package request
 
 type Void struct {
-	TransactionId string `json:"transaction_id,omitempty"`
+	AuthorizationId string `json:"authorization_id,omitempty"`
 }

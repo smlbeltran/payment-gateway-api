@@ -103,7 +103,7 @@ func cancelTransaction(db *bolt.DB, authorizationID string) (*void_model_respons
 	err = db.Update(func(tx *bolt.Tx) error {
 		err := tx.Bucket(rootBucket).Bucket(transactionBucket).Put([]byte(id), t)
 		if err != nil {
-			return fmt.Errorf("could not cancel entry: %v", err)
+			return fmt.Errorf("could not cancel transaction entry: %v", err)
 		}
 
 		return nil
@@ -128,11 +128,15 @@ func billAccount(db *bolt.DB, account account_model_request.Account) (*account_m
 		panic(err)
 	}
 
-	remainingAmount := int(transaction["amount"].(float64))
+	if transaction["cancelled"] == true {
+		panic("this transaction has been cancelled no further operations are allowed")
+	}
 
 	if transaction["complete"] == true {
 		panic("you can't charge more as this is transaction is completed.")
 	}
+
+	remainingAmount := int(transaction["amount"].(float64))
 
 	if account.Amount <= remainingAmount {
 		transaction["amount"] = remainingAmount - account.Amount

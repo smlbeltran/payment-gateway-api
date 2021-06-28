@@ -34,7 +34,7 @@ func (v *Void) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	resp, err := cancelTransaction(v.Db, void.TransactionId)
+	resp, err := cancelTransaction(v.Db, void.AuthorizationId)
 
 	if err != nil {
 		panic(err)
