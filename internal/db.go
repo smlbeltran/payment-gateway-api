@@ -76,7 +76,7 @@ func GetAuthorization(db *bolt.DB, creditInfo *auth_model_req.CreditCard) (*auth
 	return &v, err
 }
 
-func CaptureTransaction(db *bolt.DB, capture capture_model_request.Account) (*capture_model_response.CaptureResponse, error) {
+func CaptureTransaction(db *bolt.DB, capture capture_model_request.Capture) (*capture_model_response.CaptureResponse, error) {
 	var id = capture.AuthorizationId
 
 	// get initial transaction setup for the authorized payment

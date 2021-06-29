@@ -27,14 +27,14 @@ func (c *Capture) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	var account model_req.Account
+	var capture model_req.Capture
 
-	err = json.Unmarshal(body, &account)
+	err = json.Unmarshal(body, &capture)
 	if err != nil {
 		panic(err)
 	}
 
-	resp, err := api.CaptureTransaction(c.Db, account)
+	resp, err := api.CaptureTransaction(c.Db, capture)
 	if err != nil {
 		http.Error(w, fmt.Sprint(err), http.StatusUnauthorized)
 		return
