@@ -44,10 +44,29 @@ This will set the server for incoming request
 ## Running the tests
 
 Do to time constrains and work there are no automated tests for this system
-at this moment but you can use the following endpoints to test the system
+at this moment but you can use the following endpoints to test the system.
+
+## Considerations
+1. If work would not have interfered I would most likely set some validation in the middleware
+   setting my controllers to have less responsability or visibility for certain actions.
+2. would have further decoupled some of the internal logic to provide better readability.
+
+## Problem found
+I believe some of the test edge cases are not fully correct for the requirements of the
+challenge and the behaviour is intended.
+
+e.g
+* 4000 0000 0000 0259: capture failure
+* 4000 0000 0000 3238: refund failure
+
+1. These tests can't be executed as we are unable to get the credit card number from the
+   requests. We are only able to send the `authorization_id` for these.
+2. My understanding is the credit card is only validated when running the `/authorize` endpoint where
+   we are able to provide the card number within the payload. Once validated and correct we can go down the line
+   we other actions.
 
 ### Authorization Create
-It will return aunique authorization ID that will be used in all next API calls.
+It will return a unique authorization ID that will be used in all next API calls.
 
 Endpoint
 
@@ -63,7 +82,8 @@ Request
     "card_expiry_year":21, 
     "cvv": 222,
     "amount": 10,
-    "currency": "GBP"}
+    "currency": "GBP"
+}
 ```
 
 Response
@@ -110,6 +130,7 @@ Response
     "amount":10,
     "captured":6,
     "currency":"GBP"
+}
 ```
 
 Full Example within the Terminal
@@ -131,7 +152,7 @@ Request
 
 ```
 {
-	"authorization_id":"xxxxxx",
+   "authorization_id":"xxxxxx",
 }
 ```
 
@@ -161,8 +182,8 @@ POST http://localhost:8000/refund
 Request
 ```
 {
-	"authorization_id":"xxxxxx",
-    "amount":3
+   "authorization_id":"xxxxxx",
+   "amount":3
 }
 ```
 
@@ -183,11 +204,17 @@ curl -XPOST http://localhost:8000/refund -d '{"authorization_id":"xxxxxx", "amou
 ### View Transaction Status Details
 
 ```
-Will allow to view the state of the current transaction. below are the states which the transaction can be set to according to the behaviour:
+Will allow to view the state of the current transaction.
+below are the states which the transaction can be set to according to the behaviour:
 
-* if the full amount of the authorized request has been captured then the status `complete` will be set to `true` and no further actions can be taken
-* if a full refund is made then the status `refunded` will be set to `true` and no further actions can be taken
-* if a transaction has been cancelled then the status `cancelled` will be set to `true` and no further actions can be taken
+* if the full amount of the authorized request has been captured then the status `complete` will be set to `true`
+   and no further actions can be taken
+
+* if a full refund is made then the status `refunded` will be set to `true`
+  and no further actions can be taken
+
+* if a transaction has been cancelled then the status `cancelled` will be set to `true` 
+  and no further actions can be taken
 ```
 
 Endpoint
