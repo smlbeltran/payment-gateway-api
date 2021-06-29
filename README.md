@@ -240,7 +240,3 @@ Response
 * [MUX](https://github.com/gorilla/mux) - A powerful URL router and dispatcher for golang.
 * [BoltDb](https://github.com/boltdb/bolt) - An embedded key/value database for Go.
 * [goluhn](https://github.com/ShiraazMoollatjie/goluhn) - Luhn credit check validator
-
-## Acknowledgments
-
-* Special thanks for the inspiration and challenge to checkout.com (https://www.checkout.com/)
