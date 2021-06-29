@@ -88,7 +88,7 @@ func CaptureTransaction(db *bolt.DB, capture account_model_request.Account) (*ac
 		return nil, fmt.Errorf("%s", "Transaction is completed further action not allowed.")
 	}
 
-	if captureTransaction["refund"] == true {
+	if captureTransaction["refunded"] == true {
 		return nil, fmt.Errorf("%s", "Transaction has been refund no further action allowed")
 	}
 
@@ -164,6 +164,18 @@ func RefundTransaction(db *bolt.DB, reqRefund refund_model_request.Refund) (*ref
 		return nil, fmt.Errorf("unable to retrieve capture transaction: %+v", err)
 	}
 
+	if captureTransaction["refunded"] == true {
+		return nil, fmt.Errorf("amount refunded no further action is required: %+v", err)
+	}
+
+	if captureTransaction["complete"] == true {
+		return nil, fmt.Errorf("%s", "Transaction is completed further action not allowed.")
+	}
+
+	if captureTransaction["cancelled"] == true {
+		return nil, fmt.Errorf("%s", "Transaction has been cancelled no further action allowed")
+	}
+
 	// get refund
 	refundTransaction, err := getTransactionData(db, id, refundBucket)
 
@@ -171,7 +183,7 @@ func RefundTransaction(db *bolt.DB, reqRefund refund_model_request.Refund) (*ref
 		return nil, fmt.Errorf("unable to retrieve refund transaction: %+v", err)
 	}
 
-	captureAmount := int(captureTransaction["capture"].(float64))
+	captureAmount := int(captureTransaction["captured"].(float64))
 	refundTransaction["amount"] = int(refundTransaction["amount"].(float64)) + reqRefund.Amount
 
 	if refundTransaction["amount"].(int) == captureAmount {
@@ -253,11 +265,15 @@ func captureAmount(receivedAmount int, captureTransaction map[string]interface{}
 	if receivedAmount <= authorizedTransactionAmount {
 		// reducing the intial authorized purchase amount until we have
 		// charge the full amount.
-		receivedAmount += receivedAmount
+		var captureAmount int
 
-		captureTransaction["capture"] = receivedAmount
+		captureAmount += receivedAmount
 
-		if captureTransaction["capture"] == authorizedTransactionAmount {
+		captureTransaction["captured"] = int(captureTransaction["captured"].(float64)) + captureAmount
+
+		fmt.Println("captured payment:", captureTransaction["captured"])
+
+		if captureTransaction["captured"] == authorizedTransactionAmount {
 			captureTransaction["complete"] = true
 		}
 
