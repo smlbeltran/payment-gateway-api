@@ -18,7 +18,7 @@ type Transaction struct {
 
 func (t *Transaction) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	transactionID := mux.Vars(r)["applicationID"]
+	transactionID := mux.Vars(r)["authorizedID"]
 
 	var transaction map[string]interface{}
 
@@ -28,7 +28,7 @@ func (t *Transaction) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		fmt.Println("something went worng here")
+		fmt.Println("not able to view the transaction")
 	}
 
 	json.NewEncoder(w).Encode(transaction)

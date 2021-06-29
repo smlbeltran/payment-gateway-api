@@ -25,7 +25,7 @@ func main() {
 	router.Handle("/void", &routes.Void{Db: DB}).Methods("POST")
 	router.Handle("/refund", &routes.Refund{Db: DB}).Methods("POST")
 
-	router.Handle("/transaction/{applicationID}", &routes.Transaction{Db: DB}).Methods("GET")
+	router.Handle("/transaction/{authorizedID}", &routes.Transaction{Db: DB}).Methods("GET")
 
 	srv := &http.Server{
 		Handler:      router,

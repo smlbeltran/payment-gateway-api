@@ -32,7 +32,7 @@ func updateTransactionData(db *bolt.DB, id string, t []byte) error {
 }
 
 func generateAuthentication(creditInfo *auth_model_req.CreditCard) (string, []byte, error) {
-	data := &auth_model_response.Verfication{
+	data := &auth_model_response.Authorize{
 		AuthorizationId: fmt.Sprintf("%v", rand.Intn(4666778181156224-4666000000000000)),
 		Status:          1,
 		Amount:          creditInfo.Amount,
@@ -64,8 +64,9 @@ func TransactionsInitializer(db *bolt.DB, authorizationID string, creditInfo *au
 	}
 
 	refundTransactionSetup, err := json.Marshal(map[string]interface{}{
-		"amount":   0,
-		"currency": creditInfo.Currency,
+		"capture_amount": 0,
+		"refund_amount":  0,
+		"currency":       creditInfo.Currency,
 	})
 
 	if err != nil {

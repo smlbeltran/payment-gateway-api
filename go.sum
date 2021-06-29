@@ -1,3 +1,5 @@
+github.com/ShiraazMoollatjie/goluhn v0.0.0-20200114194008-196cda0245b9 h1:Oa/2b4wqrYdyOKDPjPMZaRBH+u3Qrr5CXtX7ZOc1/v4=
+github.com/ShiraazMoollatjie/goluhn v0.0.0-20200114194008-196cda0245b9/go.mod h1:5LI6VqIHoGmWsR0EJLbct5bBrtM/0pTonaAyGKmFk9U=
 github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
 github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=

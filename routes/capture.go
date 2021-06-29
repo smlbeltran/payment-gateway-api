@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -34,9 +35,13 @@ func (c *Capture) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := api.CaptureTransaction(c.Db, account)
+	if err != nil {
+		http.Error(w, fmt.Sprint(err), http.StatusUnauthorized)
+		return
+	}
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	json.NewEncoder(w).Encode(&resp)

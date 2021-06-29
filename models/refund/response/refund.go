@@ -1,6 +1,7 @@
 package response
 
 type AccountRefundResponse struct {
-	Amount   int    `json:"amount,omitempty"`
-	Currency string `json:"currency,omitempty"`
+	CaptureAmount int    `json:"capture_amount,omitempty"`
+	RefundAmount  *int   `json:"refund_amount,omitempty"`
+	Currency      string `json:"currency,omitempty"`
 }

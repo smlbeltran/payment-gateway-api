@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -35,9 +36,13 @@ func (c *Refund) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := api.RefundTransaction(c.Db, refund)
+	if err != nil {
+		http.Error(w, fmt.Sprint(err), http.StatusUnauthorized)
+		return
+	}
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	json.NewEncoder(w).Encode(&resp)
