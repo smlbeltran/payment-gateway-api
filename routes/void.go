@@ -1,4 +1,4 @@
-package main
+package routes
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/boltdb/bolt"
+	api "github.com/smlbeltran/payment-gateway-api/internal"
 	model_req "github.com/smlbeltran/payment-gateway-api/models/void/request"
 )
 
@@ -34,7 +35,7 @@ func (v *Void) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	resp, err := cancelTransaction(v.Db, void.AuthorizationId)
+	resp, err := api.CancelTransaction(v.Db, void.AuthorizationId)
 
 	if err != nil {
 		panic(err)

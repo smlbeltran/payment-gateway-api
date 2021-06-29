@@ -1,4 +1,4 @@
-package main
+package routes
 
 import (
 	"encoding/json"
@@ -6,14 +6,15 @@ import (
 	"net/http"
 
 	"github.com/boltdb/bolt"
-	model_req "github.com/smlbeltran/payment-gateway-api/models/capture/request"
+	api "github.com/smlbeltran/payment-gateway-api/internal"
+	model_req "github.com/smlbeltran/payment-gateway-api/models/refund/request"
 )
 
-type Capture struct {
+type Refund struct {
 	Db *bolt.DB
 }
 
-func (c *Capture) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *Refund) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -26,14 +27,14 @@ func (c *Capture) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	var account model_req.Account
+	var refund model_req.Refund
 
-	err = json.Unmarshal(body, &account)
+	err = json.Unmarshal(body, &refund)
 	if err != nil {
 		panic(err)
 	}
 
-	resp, err := billAccount(c.Db, account)
+	resp, err := api.RefundTransaction(c.Db, refund)
 
 	if err != nil {
 		panic(err)

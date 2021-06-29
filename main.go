@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	db "github.com/smlbeltran/payment-gateway-api/internal"
+	routes "github.com/smlbeltran/payment-gateway-api/routes"
 )
 
 func main() {
@@ -13,20 +15,19 @@ func main() {
 	router := mux.NewRouter()
 
 	//initialize db session
-	db, err := SetupDB()
+	DB, err := db.SetupDB()
 	if err != nil {
 		panic(err)
 	}
 
-	router.Handle("/authorize", &Authorize{db}).Methods("POST")
-	router.Handle("/void", &Void{db}).Methods("POST")
-	router.Handle("/capture", &Capture{db}).Methods("POST")
-	router.Handle("/refund", &Refund{db}).Methods("POST")
+	router.Handle("/authorize", &routes.Authorize{Db: DB}).Methods("POST")
+	router.Handle("/capture", &routes.Capture{Db: DB}).Methods("POST")
+	router.Handle("/void", &routes.Void{Db: DB}).Methods("POST")
+	router.Handle("/refund", &routes.Refund{Db: DB}).Methods("POST")
 
 	srv := &http.Server{
-		Handler: router,
-		Addr:    "127.0.0.1:8001",
-		// Good practice: enforce timeouts for servers you create!
+		Handler:      router,
+		Addr:         "127.0.0.1:8001",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

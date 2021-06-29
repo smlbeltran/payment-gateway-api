@@ -1,4 +1,4 @@
-package main
+package routes
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/boltdb/bolt"
+	api "github.com/smlbeltran/payment-gateway-api/internal"
 	model_req "github.com/smlbeltran/payment-gateway-api/models/authorize/request"
 )
 
@@ -39,7 +40,7 @@ func (a *Authorize) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 	// fmt.Errorf("%s", "not authorized to continue ")
 	// }
 
-	resp, err := getAuthorization(a.Db, &c)
+	resp, err := api.GetAuthorization(a.Db, &c)
 
 	if err != nil {
 		panic(err)
