@@ -21,6 +21,9 @@ https://golang.org/doc/install
 A step by step series of examples that tell you how to get a development env running and
 execute all requests.
 
+Note: if you find it difficult to install the project and run the build I have attached the binary as well
+just in case.
+
 Download the GO Project
 
 ```
@@ -42,9 +45,8 @@ Once the binary is created run
 This will set the server for incoming request
 
 ## Running the tests
-
-Do to time constrains and work there are no automated tests for this system
-at this moment but you can use the following endpoints to test the system.
+Do to time constrains and work there are no automated tests for the application
+at this moment but you can use the following endpoints to test the application.
 
 ## Considerations
 1. If work would not have interfered I would most likely set some validation in the middleware
@@ -64,6 +66,14 @@ e.g
 2. My understanding is the credit card is only validated when running the `/authorize` endpoint where
    we are able to provide the card number within the payload. Once validated and correct we can go down the line
    we other actions.
+
+## Dummy card numbers you can use
+* 4242424242424242
+* 4000000000000259
+* 5355220608463844
+
+## Dummy invalid card number to test quick
+* 5355220608464343
 
 ### Authorization Create
 It will return a unique authorization ID that will be used in all next API calls.
