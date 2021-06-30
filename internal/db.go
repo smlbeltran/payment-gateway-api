@@ -154,8 +154,6 @@ func CancelTransaction(db *bolt.DB, authorizationID string) (*void_model_respons
 	return &response, err
 }
 
-// ================================================Refund==========================================================
-
 func RefundTransaction(db *bolt.DB, reqRefund refund_model_request.Refund) (*refund_model_response.AccountRefundResponse, error) {
 	var id = reqRefund.AuthorizationId
 
@@ -193,6 +191,17 @@ func RefundTransaction(db *bolt.DB, reqRefund refund_model_request.Refund) (*ref
 		err = db.Update(func(tx *bolt.Tx) error {
 			err := tx.Bucket(rootBucket).Bucket(transactionBucket).Put([]byte(id), t)
 			return err
+		})
+
+		if err != nil {
+			panic(err)
+		}
+
+		r, _ := json.Marshal(refundTransaction)
+
+		err = db.Update(func(tx *bolt.Tx) error {
+			value := tx.Bucket(rootBucket).Bucket(refundBucket).Put([]byte(id), r)
+			return value
 		})
 
 		if err != nil {
