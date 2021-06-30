@@ -208,7 +208,7 @@ func RefundTransaction(db *bolt.DB, reqRefund refund_model_request.Refund) (*ref
 			panic(err)
 		}
 	}
-	// TODO:: we need to update the refund amount so that is displayed correctly
+
 	if captureTransaction["refunded"] == false {
 		if reqRefund.Amount <= captureAmount {
 			if refundTransaction["refund_amount"].(int) > captureAmount {
